@@ -49,31 +49,35 @@ namespace HideVolumeOSD
 
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            int vkCode = Marshal.ReadInt32(lParam);
+            // per the Windows docs lParam must not be touched when nCode < 0
 
-            if (vkCode == (int)Keys.VolumeDown || vkCode == (int)Keys.VolumeUp)
-            { 
-                if (nCode >= 0)
+            if (nCode >= 0)
+            {
+                try
                 {
-                    if (wParam == (IntPtr)WM_KEYDOWN)
+                    int vkCode = Marshal.ReadInt32(lParam);
+
+                    if (vkCode == (int)Keys.VolumeDown || vkCode == (int)Keys.VolumeUp)
                     {
-                        if (VolumeKeyPressed != null)
+                        if (wParam == (IntPtr)WM_KEYDOWN)
                         {
                             VolumeKeyPressed(null, EventArgs.Empty);
                         }
+                        else
+                            if (wParam == (IntPtr)WM_KEYUP)
+                            {
+                                VolumeKeyReleased(null, EventArgs.Empty);
+                            }
                     }
-                    else
-                    if (wParam == (IntPtr)WM_KEYUP)
-                    {
-                        if (VolumeKeyReleased != null)
-                        {
-                            VolumeKeyReleased(null, EventArgs.Empty);
-                        }
-                    }
+                }
+                catch (Exception ex)
+                {
+                    // an exception must never escape from a hook callback
+                    Log.Write("KeyHook callback failed", ex);
                 }
             }
 
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
-        }      
+        }
     }
 }

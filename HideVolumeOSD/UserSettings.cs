@@ -143,7 +143,12 @@ namespace HideVolumeOSD
 
         private void textBoxOffset_TextChanged(object sender, EventArgs e)
         {
-            Settings.Default.VolumeDisplayOffset = int.Parse(textBoxOffset.Text);
+            int offset;
+
+            if (int.TryParse(textBoxOffset.Text, out offset))
+            {
+                Settings.Default.VolumeDisplayOffset = offset;
+            }
         }
 
         private void textBoxOffset_KeyPress(object sender, KeyPressEventArgs e)

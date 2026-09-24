@@ -24,6 +24,7 @@ namespace HideVolumeOSD
             SetStyle(ControlStyles.UserPaint, true);
 
             popup = this;
+            threadVolume.IsBackground = true;   // must never keep the process alive (e.g. in -hide / -show mode)
             threadVolume.Start();
         }
         public void Stop()
@@ -43,9 +44,21 @@ namespace HideVolumeOSD
                 Refresh();
             }            
         }
+        private float lastVolume = 0;
+
         public float getVolume()
         {
-            return volumeControl.GetMasterVolume();
+            try
+            {
+                lastVolume = volumeControl.GetMasterVolume();
+            }
+            catch (Exception ex)
+            {
+                // e.g. audio service not ready / no audio device: don't crash the app
+                Log.Write("getVolume failed", ex);
+            }
+
+            return lastVolume;
         }
       
         protected override void OnVisibleChanged(EventArgs e)
@@ -67,7 +80,15 @@ namespace HideVolumeOSD
                 while (popup.Visible)
                 {
                     Thread.Sleep(20);
-                    popup.updateValueSafe();
+
+                    try
+                    {
+                        popup.updateValueSafe();
+                    }
+                    catch (Exception)
+                    {
+                        Thread.Sleep(200);
+                    }
                 }
             }
         }    

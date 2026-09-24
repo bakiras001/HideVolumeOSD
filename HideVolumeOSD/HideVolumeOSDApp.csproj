@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HideVolumeOSD</RootNamespace>
     <AssemblyName>HideVolumeOSD</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -85,6 +85,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Autostart.cs" />
     <Compile Include="ContextMenus.cs" />
     <Compile Include="DarkModeHelper.cs" />
     <Compile Include="DummyForm.cs">
@@ -94,6 +95,7 @@
       <DependentUpon>DummyForm.cs</DependentUpon>
     </Compile>
     <Compile Include="KeyHook.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="DarkRadioButton.cs">
       <SubType>Component</SubType>
     </Compile>

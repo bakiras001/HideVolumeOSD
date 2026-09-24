@@ -68,11 +68,25 @@ namespace HideVolumeOSD
 			menu.Items.Add(item);
 			switchMenu = item;
 
-			// About
+			// Settings
 			item = new ToolStripMenuItem();
 			item.Text = "Settings...";
 			item.Click += new EventHandler(Settings_Click);
 			//item.ImageIndex = 2;
+			menu.Items.Add(item);
+
+			// Start with Windows
+			item = new ToolStripMenuItem();
+			item.Text = "Start with Windows";
+			item.CheckOnClick = true;
+			item.Checked = Autostart.IsEnabled();
+			item.Click += new EventHandler(Autostart_Click);
+			menu.Items.Add(item);
+
+			// Log file (helps to find out why something does not work)
+			item = new ToolStripMenuItem();
+			item.Text = "Open log file";
+			item.Click += new EventHandler(Log_Click);
 			menu.Items.Add(item);
 
 			// About
@@ -136,6 +150,35 @@ namespace HideVolumeOSD
 				isSettingsLoaded = true;
 				new UserSettings().ShowDialog();
 				isSettingsLoaded = false;
+
+				// the keyboard hook is only installed while "volume in system tray" is on
+				hideVolumeOSDLib.ApplyKeyHookSetting();
+			}
+		}
+
+		void Autostart_Click(object sender, EventArgs e)
+		{
+			ToolStripMenuItem item = (ToolStripMenuItem)sender;
+
+			if (!Autostart.SetEnabled(item.Checked))
+			{
+				// could not write the registry value: show the real state again
+				item.Checked = Autostart.IsEnabled();
+			}
+		}
+
+		void Log_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if (System.IO.File.Exists(Log.FilePath))
+				{
+					System.Diagnostics.Process.Start("notepad.exe", "\"" + Log.FilePath + "\"");
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Write("Could not open log", ex);
 			}
 		}
 
